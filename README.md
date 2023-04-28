@@ -1,11 +1,11 @@
 # Solution:
 
 
-First thing that comes to mind after reading the challenge: double charging of invoices must be prevented. In this open ended challenge I decided to focus my attention to that aspect of the solution due to time constraints, even though there are many other design decisions.
+First thing that comes to mind after reading the challenge: double charging of invoices must be prevented. In this open ended challenge I decided to focus my attention to that aspect of the solution due to time constraints, even though there are many other design decisions to be considered.
 
 
 
-1) no double charges:
+## no double charges:
 
 In a single-threaded system, this is not an issue, as each invoice will be processed sequentially. It is worth it to consider however, what happens when we use multiple threads, or even multiple application instances connected to a single database. An invoice that is being processed, but not yet finished, could be picked up by another thread/instance, potentially resulting in a double charging of the invoice.
 
