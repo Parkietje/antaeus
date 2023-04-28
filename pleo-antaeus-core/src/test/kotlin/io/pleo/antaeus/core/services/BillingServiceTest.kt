@@ -29,7 +29,15 @@ class BillingServiceTest {
         }
     }
 
-    private val billingService = BillingService(paymentProvider = provider)
+    // mock invoice service
+    private var invoiceService = mockk<InvoiceService> {
+        every { update(1, InvoiceStatus.PAID) } returns 1
+    }
+
+    private val billingService = BillingService(
+            paymentProvider = provider,
+            invoiceService = invoiceService
+    )
 
     @Test
     fun `will assert charge is only called once when using multiple threads`() {

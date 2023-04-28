@@ -7,7 +7,10 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 
 
-class BillingService(private val paymentProvider: PaymentProvider) {
+class BillingService(
+        private val paymentProvider: PaymentProvider,
+        private val invoiceService: InvoiceService
+) {
 
     private val invoiceLocks = ConcurrentHashMap<Int, ReentrantLock>()
 
@@ -19,6 +22,7 @@ class BillingService(private val paymentProvider: PaymentProvider) {
                 val success = paymentProvider.charge(invoice)
                 if (success) {
                     // Update the invoice in the database
+                    invoiceService.update(invoice.id, InvoiceStatus.PAID)
                 }
             }
         } finally {

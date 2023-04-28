@@ -14,6 +14,10 @@ import io.pleo.antaeus.core.services.InvoiceService
 import io.pleo.antaeus.data.AntaeusDal
 import io.pleo.antaeus.data.CustomerTable
 import io.pleo.antaeus.data.InvoiceTable
+import io.pleo.antaeus.models.Currency
+import io.pleo.antaeus.models.Invoice
+import io.pleo.antaeus.models.InvoiceStatus
+import io.pleo.antaeus.models.Money
 import io.pleo.antaeus.rest.AntaeusRest
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -23,6 +27,7 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import setupInitialData
 import java.io.File
+import java.math.BigDecimal
 import java.sql.Connection
 
 fun main() {
@@ -61,7 +66,15 @@ fun main() {
     val customerService = CustomerService(dal = dal)
 
     // This is _your_ billing service to be included where you see fit
-    val billingService = BillingService(paymentProvider = paymentProvider)
+    val billingService = BillingService(
+            paymentProvider = paymentProvider,
+            invoiceService = invoiceService
+    )
+
+    invoiceService.fetchAllPending().forEach{
+        billingService.process(it)
+    }
+
 
     // Create REST web service
     AntaeusRest(
